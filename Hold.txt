@@ -1,0 +1,222 @@
+function CreateTableForm($mysqlObj, $TableName){
+    $stmtObj = new mysqli_stmt($mysqlObj);
+    $stmtObj = $mysqlObj->prepare("DROP TABLE IF EXISTS $TableName");
+    $stmtObj->execute();
+    
+    $showName = "ShowName VARCHAR(50)"; //User Entered
+    $performanceDateAndTime = "PerformanceDateAndTime DATETIME"; //User Entered
+    $nbrTickets = "NbrTickets INT"; //User Entered
+    $ticketPrice = "TicketPrice DECIMAL"; //User Entered
+    $totalCost = "TotalCost DECIMAL"; //Site Calcualated
+    
+    $SQLStatement = "CREATE TABLE $TableName ($showName, 
+            $performanceDateAndTime, $nbrTickets, $ticketPrice, $totalCost)";
+    
+    echo "<p>$SQLStatement</p>";
+    $stmtObj = $mysqlObj->prepare($SQLStatement);
+    $CreateResult = $stmtObj->execute();
+    if ($CreateResult) {
+        echo "$TableName table created.";
+    } else {
+        echo "Cannot create $TableName table. Query $SQLStatement failed. " . $stmtObj->error;
+    }
+};
+
+function AddRecordForm(){
+    echo "<form action = ? method=post>";
+        echo "<div>";
+        DisplayLabel("Show Name");
+        DisplayTextbox("showName", 0, "");
+        echo "</div>";
+
+        echo "<div>";
+        DisplayLabel("Performance Date");
+        echo "<input type=\"date\" name=\"PerformanceDate\" value="<?php echo date('Y-m-d'); ?>"/>";
+        echo "</div>";
+
+        echo "<div>";
+        DisplayLabel("Performance Time");
+        echo "<input type=\"time\" name=\"PerformanceDate\" value="<?php echo date('H:i'); ?>" />";
+        echo "</div>";
+    
+        echo "<div>";
+        DisplayLabel("Number of Tickets");
+        echo "<input type=\"number\" name=\"NbrTickets\" value=\"2\"  min=\"1\" />";
+        echo "</div>";
+
+        DisplayLabel("Ticket Price");
+        echo "<input type=\"radio\" name=\"\" id="option1" value="Option 1" />";
+
+
+        //Ticket Price -> 3 Radio Buttons ()
+};
+
+AddRecordToTable($mysqlObj, $TableName){
+    //Will take the User information from the Add Record Form
+    //And place it into the table
+};
+
+ShowDataForm($mysqlObj, $TableName){
+    //Display all the information to the User
+};
+
+WriteFooters();
+
+
+// function DisplayButton($ButtonName, $Text, $Path=null, $Alt=null, $Height=0, $Width=0)
+// {
+//     if ($Path) {
+//         // If an image path is provided, use the DisplayImage function to get the img tag.
+//         $imgTag = DisplayImage($Path, $Alt, $Height, $Width);
+//         echo "<button name='{$ButtonName}' style='background: url({$Path}) no-repeat; width: {$Width}px; height: {$Height}px;'>{$Text}{$imgTag}</button>";
+//     } else {
+//         // If no image path is provided, just display a regular button with text.
+//         echo "<button name='{$ButtonName}'>{$Text}</button>";
+//     }
+// }
+
+
+// SQL statement to drop the table if it exists
+    $dropQuery = "DROP TABLE IF EXISTS $TableName";
+    $mysqlObj->query($dropQuery);
+
+    function CreateTableForm($mysqlObj, $TableName) {
+    // Prepare the SQL statement to drop the table if it exists
+    $dropQuery = "DROP TABLE IF EXISTS ?";
+    $stmt = $mysqlObj->prepare($dropQuery);
+    if ($stmt) {
+        $stmt->bind_param("s", $TableName); // "s" indicates the parameter is a string
+        $stmt->execute();
+        $stmt->close(); // Close the statement
+    } else {
+        // Handle preparation error
+        echo "Error preparing statement: " . $mysqlObj->error;
+        return;
+    }
+
+    // SQL statement to create a new table
+    $createQuery = "
+        CREATE TABLE ? (
+            showName VARCHAR(50) PRIMARY KEY,
+            performanceDateAndTime DATETIME,
+            nbrTickets INT,
+            ticketPrice DECIMAL(5,2),
+            totalCost DECIMAL(8,2)
+        )
+    ";
+
+    $stmt = $mysqlObj->prepare($createQuery);
+    if ($stmt) {
+        $stmt->bind_param("s", $TableName);
+        if($stmt->execute()) {
+            echo "Table $TableName created successfully.";
+        } else {
+            echo "Unable to create table $TableName. Error: " . $stmt->error;
+        }
+        $stmt->close(); // Close the statement
+    } else {
+        // Handle preparation error
+        echo "Error preparing statement: " . $mysqlObj->error;
+        return;
+    }
+
+    // Option to return to the main form
+    echo "<form method='post' action=''>"; // Adjust the action accordingly
+    echo "<button type='submit' name='action' value='home'>Home</button>";
+    echo "</form>";
+
+    echo "Ticket Price: <input type='radio' name='ticketPrice' value='100' checked> 100";
+    echo "<input type='radio' name='ticketPrice' value='150'> 150";
+}
+
+
+//
+examples
+function AddBookToLibrary($connection, $libraryTable) {
+    // Get the book information from a form
+    $bookTitle = $_POST['bookTitle']; // e.g., "Harry Potter"
+    $author = $_POST['author']; // e.g., "J.K. Rowling"
+    $numPages = $_POST['numPages']; // e.g., "350"
+
+    // Create a command to add this book into the library database
+    $addBookCommand = $connection->prepare("INSERT INTO $libraryTable (title, author, pages) VALUES (?, ?, ?)");
+
+    // Attach our book information to this command
+    $addBookCommand->bind_param("ssi", $bookTitle, $author, $numPages);
+
+    // Try to run the command
+    if ($addBookCommand->execute()) {
+        echo "Successfully added $bookTitle to the library.";
+    } else {
+        echo "Error: could not add the book.";
+    }
+
+    // Close the command to clean up
+    $addBookCommand->close();
+
+    // Create a link to go back to the main page
+    echo "<a href='mainPage.php'>Back to Main Page</a>";
+}
+
+function ShowLibraryContents($connection, $libraryTable) {
+    // Ask the database for all the books in our library
+    $allBooks = $connection->query("SELECT * FROM $libraryTable");
+
+    if ($allBooks) {
+        // Create a basic table to display the books
+        echo "<table border='1'><tr><th>Title</th><th>Author</th><th>Number of Pages</th></tr>";
+
+        // For each book in the result, create a row in the table
+        while($book = $allBooks->fetch_assoc()) {
+            echo "<tr><td>" . $book['title'] . "</td><td>" . $book['author']. "</td><td>" . $book['pages']. "</td></tr>";
+        }
+
+        echo "</table>"; // Finish the table
+
+        // Show how many books we have
+        echo "<p>Total books in the library: " . $allBooks->num_rows . "</p>";
+
+        $allBooks->free(); // Clean up the book data from memory
+    } else {
+        echo "Error: could not retrieve the books.";
+    }
+
+    // Create a link to go back to the main page
+    echo "<a href='mainPage.php'>Back to Main Page</a>";
+}
+
+
+///
+config
+<?php
+ob_start(); // Turns on output buffering
+session_start();
+
+date_default_timezone_set("Europe/London");
+
+try {
+    $con = new PDO("mysql:dbname=reflix;host=localhost", "root", "");
+    $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+}
+catch (PDOException $e) {
+    exit("Connection failed: " . $e->getMessage());
+}
+?>
+
+if(isset($_POST['action'])) {
+    // Determine which form to display based on the action
+    switch($_POST['action']) {
+        case 'create_table':
+            CreateTableForm($mysqlObj, "BroadwayShows");
+            break;
+        case 'add_record':
+            AddRecordForm();
+            break;
+        case 'display_data':
+            ShowDataForm($mysqlObj, "BroadwayShows");
+            break;
+    }
+} else {
+    // No button was pressed, display the main form
+    DisplayMainForm();
+}

@@ -1,0 +1,83 @@
+h1{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.5em;
+    color: #13678A;
+}
+
+p{
+    font-size: 1em;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+label{
+    padding-left: 0.5em;
+    padding-right: 0.3em;
+}
+
+table
+{
+    padding-bottom: 1em;
+}
+
+th, td
+{
+    border: solid;
+    border-color: #012030;
+    border-width: 0.1em;
+}
+
+th
+{
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: justify;
+    padding: 0.5em;
+    background-color:#DAFDBA;
+}
+
+td
+{
+    padding: 0.5em;
+    background-color: #9AEBA3;
+}
+
+.FormArea
+{
+    background-color: #DAFDBA;
+    padding: 1em;
+    margin-top: 0.5em;
+    width: 29em;
+}
+
+.DataPair {
+    color: #012030;
+    font-size: 1.2em;
+    font-style: normal;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin-bottom: 1em;
+    margin-top: 0.5em;
+    margin-left: 1.4em;
+}
+
+.ButtonStyles {
+    background-color: none;
+    background: none;
+    border-color: none;
+    border: none;
+    margin: 0em;
+    padding: 0em;
+    padding-right: 0.5em;
+}
+
+.InputStyles {
+    background-color: #9AEBA3;
+}
+
+.ButtonsArea {
+    margin-top: 0.5em;
+    text-align: center;
+}
+
+.SaveButton button {
+    display: inline-block;
+    margin: 0 auto;
+}
